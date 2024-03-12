@@ -1,9 +1,23 @@
 import Label from "./Label"
 import Input from "./Input"
 import Button from "../Button"
+import { FC } from "react"
 
+interface IPropsInputForm {
+    label: string
+    name: string
+    type: string
+    placeholder: string
+    fieldSize?: string
+    withButton?: boolean
+    buttonName?: string
+    buttontype?: "button"|"submit"|"reset"|undefined;
+    btnColor?: string
+    onClick?: React.MouseEventHandler<HTMLButtonElement> | undefined
+    movieList?: any
+    defValueNum?: number}
 
-const InputForm = (props) => {
+const InputForm : FC<IPropsInputForm> = (props) => {
     const {
         label, 
         name, 
@@ -12,7 +26,7 @@ const InputForm = (props) => {
         fieldSize="w-full", 
         withButton=true, 
         buttonName, 
-        buttontype,
+        buttontype="button",
         btnColor= 'bg-gradient-to-r from-pink-600 to-red-600',
         onClick,
         movieList,
@@ -22,28 +36,28 @@ const InputForm = (props) => {
     if (withButton == false) {
         if (type == "HTM"){
             return(
-                <div name={`divInputHTM-${name}`} className="flex justify-between items-center mb-3">      
+                <div id={`divInputHTM-${name}`} className="flex justify-between items-center mb-3">      
                     <Label htmlFor={name}>{label}</Label>
-                    <Input id={`inputHTM-${name}`} name={name} type="number" placeholder={placeholder} fieldSize={fieldSize} defValueNum={defValueNum}/>
+                    <Input name={name} type="number" placeholder={placeholder} fieldSize={fieldSize} defValueNum={defValueNum}/>
                 </div>
                 
             )
         }
         return (
-            <div name={`divInput-${name}`}>
+            <div id={`divInput-${name}`}>
                 <Label htmlFor={name}>{label}</Label>
                 <div className="flex justify-between items-center mb-3">      
-                    <Input id={`input-${name}`} name={name} type={type} movieList={movieList} placeholder={placeholder} fieldSize={fieldSize} defValueNum={defValueNum}/>
+                    <Input name={name} type={type} movieList={movieList} placeholder={placeholder} fieldSize={fieldSize} defValueNum={defValueNum}/>
                 </div>
             </div>
         )
     }
 
     return (
-        <div name={`divInput-${name}`}>
+        <div id={`divInput-${name}`}>
             <Label htmlFor={name}>{label}</Label>
             <div className="flex justify-between items-center mb-3">      
-                <Input id={`input-${name}`} name={name} type={type} placeholder={placeholder} fieldSize={fieldSize} defValueNum={defValueNum}/>
+                <Input name={name} type={type} placeholder={placeholder} fieldSize={fieldSize} defValueNum={defValueNum}/>
                 <Button type={buttontype} onClick={onClick} btnColor={btnColor}>{buttonName}</Button>
             </div>
         </div>

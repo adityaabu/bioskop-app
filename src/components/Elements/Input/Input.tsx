@@ -1,7 +1,20 @@
-import { useState } from "react";
+import { FC, useState } from "react";
 
+interface IInput{
+    type: string
+    placeholder: string
+    name: string
+    fieldSize?: string
+    movieList?: any
+    defValueNum?: number
+}
 
-const Input = (props) => {
+interface IMovie {
+    imdbID: string
+    Title: string
+}
+
+const Input: FC<IInput> = (props) => {
     const {type, placeholder, name, fieldSize="w-full", movieList, defValueNum} = props;
 
     const [getNum,setNum] = useState(defValueNum)    
@@ -9,9 +22,8 @@ const Input = (props) => {
         return (
             <select
                 id={name} className={`block px-2 py-1.5 ${fieldSize} border border-gray-300 rounded-md text-sm shadow-sm placeholder-gray-400`}
-                placeholder={placeholder}
                 name={name}>
-                {movieList.length > 0 && movieList.map((movie) => (
+                {movieList.length > 0 && movieList.map((movie:IMovie) => (
                     <option key={movie.imdbID} value={movie.Title}>{movie.Title}</option>
                 ))}
             </select>

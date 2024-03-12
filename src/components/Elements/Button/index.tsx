@@ -1,11 +1,20 @@
-const Button = (props) => {
+import { FC } from "react"
+
+interface IPropsButton {
+  children?: string
+  btnColor?: string
+  id?: string
+  name?: string
+  onClick?: React.MouseEventHandler<HTMLButtonElement> | undefined
+  type?: 'button'|'submit'|'reset'|undefined
+}
+
+const Button : FC<IPropsButton> = (props) => {
     const {
       children = 'Button',
       btnColor, 
-      id, 
-      name, 
-      onClick  = () => {}, 
-      type ="button"
+      onClick , 
+      type = 'button'
     } = props
     return(
       <button  

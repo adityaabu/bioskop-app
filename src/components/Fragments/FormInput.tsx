@@ -1,13 +1,9 @@
 import { useState } from "react";
-import InputForm from "../Elements/input"
+import InputForm from "../Elements/Input";
 import { getMovies } from "../../services/movie.service";
 
-
-
-
-const FormInput = (props) => {
+const FormInput = () => {
     const [movieList, setMovieList] = useState([])
-    const [getDay, setDay] = useState(0)
 
     const initialHTM = [
         { id: 'sun', price: 0},
@@ -16,36 +12,35 @@ const FormInput = (props) => {
     ];
 
     const [getHtm, setHtm] = useState(initialHTM)
-    const handleGetMovie = (event) => {
+    const handleGetMovie: React.MouseEventHandler<HTMLButtonElement> = (event) => {
         event.preventDefault();
         getMovies((data) => {
             if (data !== undefined ){
                 setMovieList(data)
             }
         }
-            ,event.currentTarget.previousSibling.value
+            ,event.currentTarget.previousSibling!.value
         );
-    };
+      };
 
-    const validateForm = (event) =>{
-        const totalTicket = event.target.totalTicket.value
-        const movieName = event.target.selectMovie.value
-        const movieDate = event.target.movieDate.value
-        const htmSunday = parseInt(event.target.htmSunday.value)
-        const htmFriSat = parseInt(event.target.htmFriSat.value)
-        const htmMonThu = parseInt(event.target.htmMonThu.value)
+    const validateForm = (prop: { target: { totalTicket: { value: any; }; selectMovie: { value: any; }; movieDate: { value: any; }; htmSunday: { value: string; }; htmFriSat: { value: string; }; htmMonThu: { value: string; }; }; preventDefault: () => void; }) =>{
+        const totalTicket = prop.target.totalTicket.value
+        const movieName = prop.target.selectMovie.value
+        const movieDate = prop.target.movieDate.value
+        const htmSunday = parseInt(prop.target.htmSunday.value)
+        const htmFriSat = parseInt(prop.target.htmFriSat.value)
+        const htmMonThu = parseInt(prop.target.htmMonThu.value)
         var errorMessage = ''
-        if (!totalTicket){
-            meserrorMessagesage= 'Silahkan Masukan Jumlah Tiket Terlebih Dahulu'
+        if (totalTicket<=0){
+            errorMessage= 'Silahkan Masukan Jumlah Tiket Terlebih Dahulu'
         } else if (!movieDate){
             errorMessage= 'Silahkan Masukan Jumlah Tiket Terlebih Dahulu'
         } else if (!movieName){
-            meserrorMessagesage= 'Silahkan Pilih Film Terlebih Dahulu'
+            errorMessage= 'Silahkan Pilih Film Terlebih Dahulu'
         } else if (htmSunday == 0 || htmFriSat == 0 || htmMonThu == 0){
             errorMessage= 'Silahkan Klik Tombol Pilih Pada Pilih Tanggal. HTM Tidak Boleh 0'
         }
         if (errorMessage){
-            event.preventDefault();
             alert(errorMessage)
             return false
         } else {
@@ -54,12 +49,36 @@ const FormInput = (props) => {
     }
 
 
-    const handlesubmit = (event) => {
+    const handlesubmit: React.MouseEventHandler<HTMLButtonElement> = (event) => {
 
-        const check = false
-        const history = JSON.parse(localStorage.getItem('Transaction')) || []
+        const historyItem = localStorage.getItem('Transaction');
+        const history = historyItem ? JSON.parse(historyItem) : [];
         const totalTicket = parseInt(event.target.totalTicket.value)
-        var validate= validateForm(event)
+        const movieName = event.target.selectMovie.value
+        const movieDate = event.target.movieDate.value
+        const htmSunday = parseInt(event.target.htmSunday.value)
+        const htmFriSat = parseInt(event.target.htmFriSat.value)
+        const htmMonThu = parseInt(event.target.htmMonThu.value)
+
+        var errorMessage = ''
+        var validate= true
+        if (totalTicket<=0 || totalTicket == null || totalTicket == undefined){
+            errorMessage= 'Silahkan Masukan Jumlah Tiket Terlebih Dahulu'
+            validate = false;
+        }
+        else if (!movieName){
+            errorMessage= 'Silahkan Pilih Film Terlebih Dahulu'
+            validate = false;
+        }
+        else if (!movieDate){
+            errorMessage= 'Silahkan Pilih Tanggal Terlebih Dahulu'
+            validate = false;
+        }
+        else if (htmSunday == 0 || htmFriSat == 0 || htmMonThu == 0){
+            errorMessage= 'Silahkan Klik Tombol Pilih Pada Pilih Tanggal. HTM Tidak Boleh 0'
+            validate = false;
+        }
+
         if (validate){
             const date = new Date(event.target.movieDate.value);
             const day = date.getDay();
@@ -79,14 +98,14 @@ const FormInput = (props) => {
             }
 
             if(history.length>0){
-                var i = history.findIndex(e => e.movieDate==event.target.movieDate.value)
+                var i = history.findIndex((e: { movieDate: any; }) => e.movieDate==event.target.movieDate.value)
                 const film = {
                     totalTicket: totalTicket,
                     movieName: event.target.selectMovie.value,
                     priceTicket: htm,
                 }
                 if (i >=0){
-                    var j =history[i].movieList.findIndex(e=> e.movieName==event.target.selectMovie.value)
+                    var j =history[i].movieList.findIndex((e: { movieName: any; })=> e.movieName==event.target.selectMovie.value)
 
                     history[i].totalTicketAll = history[i].totalTicketAll + totalTicket
                     history[i].totalTransaction = history[i].totalTransaction + (totalTicket * film.priceTicket)
@@ -96,11 +115,10 @@ const FormInput = (props) => {
                 } else{
                     const data = {
                         movieDate: event.target.movieDate.value,
-                        movieList:[],
+                        movieList:[film],
                         totalTicketAll:film.totalTicket,
                         totalTransaction:(totalTicket * film.priceTicket)
-                    }   
-                    data.movieList.push(film)
+                    }
                     history.push(data)     
                 }
                     
@@ -115,24 +133,25 @@ const FormInput = (props) => {
 
                 const data = {
                     movieDate: event.target.movieDate.value,
-                    movieList:[],
+                    movieList:[film],
                     totalTicketAll:film.totalTicket,
                     totalTransaction:(totalTicket * film.priceTicket)
                 }
-        
-                data.movieList.push(film)
                 listData.push(data)
     
                 localStorage.setItem('Transaction', JSON.stringify(listData))}
 
+        } else {
+            event.preventDefault();
+            alert(errorMessage)
         }
     };
 
-    const handleGetPrice = (event) => {
+    const handleGetPrice : React.MouseEventHandler<HTMLButtonElement> = (event) => {
         event.preventDefault();
 
-        const selectedMovie = event.currentTarget.form.selectMovie.value;
-        const date = new Date(event.currentTarget.previousSibling.value);
+        const selectedMovie = event.currentTarget.form?.selectMovie.value;
+        const date = new Date(event.currentTarget.previousSibling?.value);
 
         if (!selectedMovie){
             alert("Silahkan Pilih Film Terlebih Dahulu.")
@@ -141,19 +160,18 @@ const FormInput = (props) => {
         if (!date){
             alert("Silahkan Pilih Tanggal Terlebih Dahulu.")
         } else {
-            const day = date.getDay();
-            setDay(day)
             const htm = getHtm
-            if (htm.find((o) => o.id == 'monthu').price == 0){
-                htm.find((o) => o.id == 'monthu').price = 35000
+            if (htm.find((o) => o.id == 'monthu')?.price == 0){
+                htm.find((o) => o.id == 'monthu')!.price = 35000
             }
-            if (htm.find((o) => o.id == 'frisat').price == 0){
-                htm.find((o) => o.id == 'frisat').price = 40000
+            if (htm.find((o) => o.id == 'frisat')?.price == 0){
+                htm.find((o) => o.id == 'frisat')!.price = 40000
             }
-            if (htm.find((o) => o.id == 'sun').price == 0){
-                htm.find((o) => o.id == 'sun').price = 45000
+            if (htm.find((o) => o.id == 'sun')?.price == 0){
+                htm.find((o) => o.id == 'sun')!.price = 45000
             }
             setHtm(htm)
+            console.log(htm)
         }
     };
 
@@ -169,6 +187,7 @@ const FormInput = (props) => {
                 withButton={true} 
                 buttonName="Simpan" 
                 buttontype="submit"
+                onClick={() => {}}
                 btnColor="bg-gradient-to-r from-green-600 to-green-800"/>
             <InputForm 
                 label="Cari Film" 
@@ -183,6 +202,7 @@ const FormInput = (props) => {
                 label="Pilih Film" 
                 name="selectMovie" 
                 type="dropdown" 
+                onClick={() => {}}
                 placeholder="Silahkan Pilih Film" 
                 movieList={movieList}
                 withButton={false}/>
@@ -191,7 +211,7 @@ const FormInput = (props) => {
                 name="movieDate" 
                 type="Date" 
                 placeholder="dd/mm/yyyy" 
-                ieldSize="w-4/5" 
+                fieldSize="w-4/5" 
                 withButton={true} 
                 buttonName="Pilih"
                 onClick={handleGetPrice}/>
@@ -207,7 +227,8 @@ const FormInput = (props) => {
                     placeholder="0" 
                     withButton={false} 
                     fieldSize="w-2/5"
-                    defValueNum={getHtm.find((o) => o.id == 'monthu').price}/>
+                    onClick={() => {}}
+                    defValueNum={getHtm.find((o) => o.id == 'monthu')?.price}/>
                 <InputForm 
                     label="Jumat - Sabtu" 
                     name="htmFriSat" 
@@ -215,7 +236,8 @@ const FormInput = (props) => {
                     placeholder="0" 
                     withButton={false} 
                     fieldSize="w-2/5"
-                    defValueNum={getHtm.find((o) => o.id == 'frisat').price}/>
+                    onClick={() => {}}
+                    defValueNum={getHtm.find((o) => o.id == 'frisat')?.price}/>
                 <InputForm 
                     label="Minggu" 
                     name="htmSunday" 
@@ -223,7 +245,8 @@ const FormInput = (props) => {
                     placeholder="0" 
                     withButton={false} 
                     fieldSize="w-2/5"
-                    defValueNum={getHtm.find((o) => o.id == 'sun').price}/>
+                    onClick={() => {}}
+                    defValueNum={getHtm.find((o) => o.id == 'sun')?.price}/>
             </div>
             
             </form>

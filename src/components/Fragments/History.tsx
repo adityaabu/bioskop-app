@@ -1,9 +1,23 @@
-import { useState } from "react"
+interface ITransactionItem{
+    movieDate: any;
+    movieList: any[];
+    totalTicketAll: number;
+    totalTransaction: { toLocaleString: (arg0: string, arg1: { style: string; currency: string; }) => string};
+}
 
-const History = (props) => {
-    const [transaction, setTransaction] = useState(JSON.parse(localStorage.getItem('Transaction')) || [])
+interface IMovie{
+    movieName: string;
+    totalTicket: number;
+    priceTicket: number;
+}
 
-    const formatDate = (value) => {
+
+
+const History = () => {
+    const transactionData = localStorage.getItem('Transaction');
+    const transaction = transactionData ? JSON.parse(transactionData) : [];
+
+    const formatDate = (value: string ) => {
         
         let date = new Date(value);
         const day = date.toLocaleString('default', { day: '2-digit' });
@@ -14,7 +28,10 @@ const History = (props) => {
     
     return(
         <div className="flex w-1/2 flex-col p-4 bg-red-100 rounded">
-            {transaction.length > 0 && transaction.map((item) => (
+            {
+                transaction.length > 0 && 
+                transaction.map(
+                    (item: ITransactionItem) => (
                 <div key={self.crypto.randomUUID()}className="flex w-full flex-col m-1 p-1 bg-yellow-100 rounded">
                     <table className="text-left table-auto border-separate border-spacing-x-5">
                         <thead>
@@ -33,7 +50,7 @@ const History = (props) => {
                         </thead>
                         <tbody>
                             {item.movieList.length > 0 && 
-                                item.movieList.map((movie) => {
+                                item.movieList.map((movie: IMovie) => {
                                 return (
                                     <tr key={self.crypto.randomUUID()}>
                                         <td>{movie.movieName}</td>
