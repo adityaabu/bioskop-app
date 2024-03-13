@@ -1,3 +1,5 @@
+import { useSelector } from "react-redux";
+
 interface ITransactionItem{
     movieDate: any;
     movieList: any[];
@@ -11,12 +13,9 @@ interface IMovie{
     priceTicket: number;
 }
 
-
-
 const History = () => {
-    const transactionData = localStorage.getItem('Transaction');
-    const transaction = transactionData ? JSON.parse(transactionData) : [];
 
+    const transaction = useSelector((state : any) => state.history.data)
     const formatDate = (value: string ) => {
         
         let date = new Date(value);
